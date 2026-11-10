@@ -154,16 +154,21 @@ mergedConfig = mergeConfigs(mergedConfig, envConfig);
 
 // Optionally merge `<NODE_ENV>.secret.config.json` (gitignored) so values such
 // as the session `secret` can be deployed without committing them.
-try {
-  const secretConfig = (
-    await import(
-      path.join(project_root_file_path, `${env}.secret.config.json`),
-      {with: {type: 'json'}}
-    )
-  ).default;
+// Only a missing file is tolerated: a file that exists but fails to load (e.g.
+// malformed JSON) must stop the server rather than silently falling back to
+// the default session secret.
+const secretConfigPath = path.join(
+  project_root_file_path,
+  `${env}.secret.config.json`
+);
+const hasSecretConfig = await fs
+  .access(secretConfigPath)
+  .then(() => true)
+  .catch(() => false);
+if (hasSecretConfig) {
+  const secretConfig = (await import(secretConfigPath, {with: {type: 'json'}}))
+    .default;
   mergedConfig = mergeConfigs(mergedConfig, secretConfig);
-} catch (e) {
-  // Ignore if the secret config file is missing
 }
 
 const is_idp =
