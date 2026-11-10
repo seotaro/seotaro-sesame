@@ -15,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `../android-identity-samples/Shrine` が接続する自前サーバー。GCP プロジェクト `seotaro-sesame`（App Engine, `asia-northeast1`）。
 
+- 用途は Shrine の **パスワードでのサインイン + Restore Credentials（ゼロタップログイン）だけ**。passkey・FedCM・Sign in with Google は使わない。コードは upstream のまま残し、`enabled_pages: ["/"]` で Web ページを閉じ、`supported_idps` も設定しないことで絞っている。ただし Restore Key の実体は WebAuthn クレデンシャルなので、`/webauthn/*`（registerRequest/Response, signinRequest/Response, getKeys, removeKey）と `/auth/username-password` は必須。
 - 設定は `seotaro.config.json` + `seotaro.yaml`（`NODE_ENV=seotaro`）。セッションの `secret` は gitignore 済みの `seotaro.secret.config.json` に置き、`src/server/config.ts` が `<NODE_ENV>.secret.config.json` があれば最後にマージする（fork で追加した仕組み）。
 - App Engine 側ではビルドされず手元の `dist/` がそのまま上がるので、デプロイは `npm run deploy:seotaro`（build → `gcloud app deploy seotaro.yaml cron.yaml`）。
 - `hostname`・Shrine の `API_BASE_DOMAIN`・Shrine の `asset_statements`（`strings.xml`）・`associated_domains` の SHA-256 は互いに一致していないと passkey / Restore Credentials が失敗する。どれかを変えるときは両リポジトリを同時に直す。
