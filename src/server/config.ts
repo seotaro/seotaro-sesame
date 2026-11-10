@@ -152,6 +152,20 @@ if (is_mock_cross_site) {
 
 mergedConfig = mergeConfigs(mergedConfig, envConfig);
 
+// Optionally merge `<NODE_ENV>.secret.config.json` (gitignored) so values such
+// as the session `secret` can be deployed without committing them.
+try {
+  const secretConfig = (
+    await import(
+      path.join(project_root_file_path, `${env}.secret.config.json`),
+      {with: {type: 'json'}}
+    )
+  ).default;
+  mergedConfig = mergeConfigs(mergedConfig, secretConfig);
+} catch (e) {
+  // Ignore if the secret config file is missing
+}
+
 const is_idp =
   env === 'idp' ||
   env === 'idp-localhost' ||
