@@ -25,3 +25,5 @@ dist/
 firebase-export-*
 node_modules/
 service-account.json
+# Per-environment secrets (deployed via gcloud, never committed)
+*.secret.config.json

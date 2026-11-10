@@ -26,6 +26,7 @@
     "deploy": "CLOUDSDK_CORE_PROJECT=project-sesame-426206 gcloud app deploy staging.yaml",
     "deploy:idp": "CLOUDSDK_CORE_PROJECT=sesame-identity-provider gcloud app deploy idp.yaml",
     "deploy:prod": "CLOUDSDK_CORE_PROJECT=identity-sesame gcloud app deploy prod.yaml",
+    "deploy:seotaro": "npm run build && CLOUDSDK_CORE_PROJECT=seotaro-sesame gcloud app deploy seotaro.yaml cron.yaml",
     "dev": "concurrently -k -n \"EMU,CLIENT,SERVER\" \"npm:emulator\" \"wait-on tcp:4000 && npm run dev:client\" \"wait-on tcp:4000 && NODE_ENV=localhost npm run dev:server\"",
     "dev:client": "npx rsbuild dev",
     "dev:client:idp": "npx rsbuild dev --port 3001",
